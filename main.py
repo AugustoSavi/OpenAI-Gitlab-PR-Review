@@ -1,8 +1,10 @@
 import os
-import json
 import requests
-from flask import Flask, request
+from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 import openai
+
+load_dotenv()
 
 app = Flask(__name__)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
@@ -27,11 +29,18 @@ def webhook():
             return "Not a  PR open", 200
         project_id = payload["project"]["id"]
         mr_id = payload["object_attributes"]["iid"]
-        changes_url = f"{gitlab_url}/projects/{project_id}/merge_requests/{mr_id}/changes"
+        changes_url = f"{gitlab_url}/api/v4/projects/{project_id}/merge_requests/{mr_id}/changes"
 
         headers = {"Private-Token": gitlab_token}
         response = requests.get(changes_url, headers=headers)
-        mr_changes = response.json()
+        if response.status_code != 200:
+          return jsonify({"error": "Erro ao buscar changes"}), 502
+        try:
+            mr_changes = response.json()
+        except ValueError:
+            print("changes_url, headers: {0} || {1}".format(changes_url, headers))
+            print("Erro ao decodificar JSON:", response.status_code)
+            return jsonify({"error": "Erro ao buscar changes"}), 502
 
         diffs = [change["diff"] for change in mr_changes["changes"]]
 
@@ -71,17 +80,31 @@ def webhook():
             answer += "\n\nError: " + str(e)
 
         print(answer)
-        comment_url = f"{gitlab_url}/projects/{project_id}/merge_requests/{mr_id}/notes"
+        comment_url = f"{gitlab_url}/api/v4/projects/{project_id}/merge_requests/{mr_id}/notes"
         comment_payload = {"body": answer}
         comment_response = requests.post(comment_url, headers=headers, json=comment_payload)
+
+        if comment_response.status_code != 201:
+          print(comment_response.text)
+          return jsonify({"error": "Erro ao comentar no merge request"}), 502
+        
+        return jsonify({"sucess": "comentado no merge request"}), 200
+
     elif payload.get("object_kind") == "push":
         project_id = payload["project_id"]
         commit_id = payload["after"]
-        commit_url = f"{gitlab_url}/projects/{project_id}/repository/commits/{commit_id}/diff"
+        commit_url = f"{gitlab_url}/api/v4/projects/{project_id}/repository/commits/{commit_id}/diff"
 
         headers = {"Private-Token": gitlab_token}
         response = requests.get(commit_url, headers=headers)
-        changes = response.json()
+        if response.status_code == 200:
+          try:
+              changes = response.json()
+          except ValueError:
+              print("Erro ao decodificar JSON:", response.text)
+        else:
+            print(f"Erro na requisição. Status code: {response.status_code}")
+            print(f"Resposta: {response.text}")
 
         changes_string = ''.join([str(change) for change in changes])
 
@@ -124,12 +147,15 @@ def webhook():
             answer += "\n\nError: " + str(e)
 
         print(answer)
-        comment_url = f"{gitlab_url}/projects/{project_id}/repository/commits/{commit_id}/comments"
+        comment_url = f"{gitlab_url}/api/v4/projects/{project_id}/repository/commits/{commit_id}/comments"
         comment_payload = {"note": answer}
         comment_response = requests.post(comment_url, headers=headers, json=comment_payload)
+        if comment_response.status_code != 201:
+          return jsonify({"error": "Erro ao comentar no merge request"}), 502
+        
+        return jsonify({"sucess": "comentado no merge request"}), 200
 
     return "OK", 200
 
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=True)

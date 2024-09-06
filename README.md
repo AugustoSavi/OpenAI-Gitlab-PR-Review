@@ -59,6 +59,12 @@ docker-compose up -d
 
 ## Usage
 
-1. Configure your GitLab repository to send webhook events to the AI Code Reviewer application by following [GitLab's webhook documentation](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html).
+1. Gere o access token no seu profile gitlab
 
-2. The AI Code Reviewer application will automatically review code changes in your GitLab repository and provide feedback as comments on merge requests and commit diffs.
+2. Configure your GitLab repository to send webhook events to the AI Code Reviewer application by following [GitLab's webhook documentation](https://docs.gitlab.com/ee/user/project/integrations/webhooks.html).
+
+3. The AI Code Reviewer application will automatically review code changes in your GitLab repository and provide feedback as comments on merge requests and commit diffs.
+
+## Testar local:
+
+- https://dashboard.ngrok.com/get-started/setup/linux
