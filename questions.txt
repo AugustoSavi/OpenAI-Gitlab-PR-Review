@@ -1,0 +1,7 @@
+1. Resuma as principais mudanças.
+2. O código novo/modificado é claro?
+3. Comentários e nomes são descritivos?
+4. A complexidade pode ser reduzida? Exemplos?
+5. Algum bug? Onde?
+6. Possíveis problemas de segurança?
+7. Sugestões para alinhamento de melhores práticas?
