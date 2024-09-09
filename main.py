@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, Response
 from typing import List, Optional, Dict, Any
 from dotenv import load_dotenv
 import openai
+import json
 
 load_dotenv()
 
@@ -35,7 +36,7 @@ def webhook() -> tuple[Response, int]:
       print("payload is None")
       return jsonify({"error": "Payload invalido"}), 400
 
-    print(payload)
+    print(json.dumps(payload, indent=2))
     if payload.get("object_kind") == "merge_request":
       if payload["object_attributes"]["action"] != "open":
         print("object_attributes.action != open")
@@ -85,6 +86,10 @@ def webhook() -> tuple[Response, int]:
         return jsonify({"sucess": "comentado no merge request"}), 200
 
     elif payload.get("object_kind") == "push":
+      ref = payload["ref"]
+      if "main" in ref or "master" in ref:
+        return jsonify({"ok": "commit master/main"}), 200
+
       project_id = payload["project_id"]
       commit_id = payload["after"]
       commit_url = f"{gitlab_url}/api/v4/projects/{project_id}/repository/commits/{commit_id}/diff"
