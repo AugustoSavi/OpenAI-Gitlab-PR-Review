@@ -19,43 +19,43 @@ AI Code Reviewer is a Python script that leverages OpenAI's GPT-3.5-turbo to aut
 
 ### Installation
 
-1. Clone the repository:
+1. Clone o repo :
 ```
-https://git.facha.dev/facha/openai-gitlab-pr-review.git
-cd ai-code-reviewer
+https://github.com/AugustoSavi/OpenAI-Gitlab-PR-Review
+cd OpenAI-Gitlab-PR-Review
 ```
 
-2. Install the required Python packages:
+1. Crie um virtual env  
+
+```bash
+python3 -m venv venv
 ```
-pip install -r requirements.txt
+
+2. Ative o virtual env criado 
+
+```bash
+source ./venv/bin/activate
+```
+
+3. Instale as dependencias  
+
+```bash
+pip install --requirement requirements.txt
 ```
 
 3. Create a `.env` file and set the required environment variables:
+
 ```
 OPENAI_API_KEY=<your OpenAI API key>
 GITLAB_TOKEN=<your GitLab API token>
 GITLAB_URL=https://gitlab.com/api/v4
-EXPECTED_GITLAB_TOKEN=<your expected GitLab token>
 ```
+
 4. Run the application:
-```
-python app.py
-```
 
-
-### Docker
-
-Alternatively, you can use Docker to run the application:
-
-1. Build the Docker image:
 ```
-docker-compose build
+python src/handler.py
 ```
-2. Run the Docker container:
-```
-docker-compose up -d
-```
-
 
 ## Usage
 

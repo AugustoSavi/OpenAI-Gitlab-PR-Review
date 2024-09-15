@@ -1,0 +1,1 @@
+Revise as seguintes alterações no código git diff, com foco na estrutura, segurança, clareza e performance.

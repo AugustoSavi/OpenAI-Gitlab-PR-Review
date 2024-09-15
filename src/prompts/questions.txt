@@ -6,3 +6,4 @@
 6. Possíveis problemas de segurança?
 7. Sugestões para alinhamento de melhores práticas?
 8. Pode ser adicionado algum tipo de cache? onde?
+9. identifique problemas no código que podem prejudicar a performance, caso encontre sugira melhorias
